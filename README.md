@@ -3,12 +3,16 @@
 swift 版本的   字典转模型
 
 说明：
+
 1：constantBox.swift   对字典的扩展
+
 2：KeyValueModel.swift 需要解析类的基类  继承即可
     注解：不需要任何构造器  已经实现序列化和反序列化
+    
 3：messageInfo.swift    是对类的每个属性的封装（内部使用）
 
 使用：具体看Dome
+
  1:重写
   需要解析的类 重写该方法 告诉解析器 模型和字典 属性和字典不同的配对
   例：模型 为ID  字典为  id    则返回["ID":"id"]
@@ -32,6 +36,7 @@ swift 版本的   字典转模型
   
       内部实现网络请求
   3： class func GETModelsWithUrl(urlString:String,option:([String:AnyObject])->AnyObject,complement:([KeyValueModel]?)->())
+  
   4： class func POSTModelsWithUrl(urlString:String,argumentDic:[String:String],option:([String:AnyObject])->AnyObject,complement:(([KeyValueModel]?)->()))
    
    
