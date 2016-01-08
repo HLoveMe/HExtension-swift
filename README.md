@@ -23,10 +23,13 @@ swift 版本的   字典转模型
    
    
 3：主要使用方法
+
       字典数组 转 模型数组
   1： class func modelsWithArray(modelArray:[[String:AnyObject]]) ->[KeyValueModel]  
+  
      字典转模型
   2： class func modelWithDictionary( var  diction:[String:AnyObject]) ->Self
+  
       内部实现网络请求
   3： class func GETModelsWithUrl(urlString:String,option:([String:AnyObject])->AnyObject,complement:([KeyValueModel]?)->())
   4： class func POSTModelsWithUrl(urlString:String,argumentDic:[String:String],option:([String:AnyObject])->AnyObject,complement:(([KeyValueModel]?)->()))
