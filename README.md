@@ -18,6 +18,7 @@ swift 版本的   字典转模型
   需要解析的类 重写该方法 告诉解析器 模型和字典 属性和字典不同的配对
   
   例：模型 为ID  字典为  id    则返回["ID":"id"]
+  
   func propertyNameInDictionary()->[String:String]?
   
 2:对模型的要求
