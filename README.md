@@ -14,15 +14,18 @@ swift 版本的   字典转模型
 使用：具体看Dome
 
  1:重写
+ 
   需要解析的类 重写该方法 告诉解析器 模型和字典 属性和字典不同的配对
+  
   例：模型 为ID  字典为  id    则返回["ID":"id"]
   func propertyNameInDictionary()->[String:String]?
+  
 2:对模型的要求
+
    var ID:Int = 0      基本数据类型不能为可选型 （如果为可选型 这里不会处理）  并给定初始值
-   var title:String?    
-   var mediatype:Int = 0
-   var type:String?
+
    var urls:[String]?  
+   
    var photos:[photo]?    指定数组里面的类型   解析器就会自动解析为 指定类型
    
    
