@@ -23,7 +23,9 @@ swift 版本的   字典转模型
   
 2:对模型的要求
 
-   var ID:Int = 0      基本数据类型不能为可选型 （如果为可选型 这里不会处理）  并给定初始值
+   var ID:Int = 0      基本数据类型不能为可选型 （如果为可选型 这里不会处理）  并给定初始值(int float double long)
+   
+   var  name:String?   可以为可选型
 
    var urls:[String]?  
    
