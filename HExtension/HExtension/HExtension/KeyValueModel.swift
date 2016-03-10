@@ -70,15 +70,12 @@ extension KeyValueModel{
         /**得到[propertyName:key]*/
         let exchageDic = model.propertyNameInDictionary()
         func setValue(msg:messageInfo,dicProperName:String){
-            if (diction.contains { (name,value) -> Bool in return dicProperName == name }) {
-                let value =  diction[dicProperName]!
+            if var value = diction[dicProperName] {
                 if msg.isModelArray {
                     /**模型数组*/
                     if let className = msg.arrarModelName{
                         var arr = [AnyObject]()
-                        var ClassName = "\(NSBundle.mainBundle().infoDictionary!["CFBundleName"]!)"
-                        ClassName.appendContentsOf("." + className)
-                        let clazz = NSClassFromString(ClassName)
+                        let clazz = NSClassFromString(className.getWholeClassName())
                         if let _ = clazz {
                             let oneModel = (clazz as! KeyValueModel.Type).init()
                             for one in (diction[dicProperName] as? [[String:AnyObject]]!)! {
@@ -87,9 +84,6 @@ extension KeyValueModel{
                             model.setValue(arr , forKeyPath:msg.name)
                         }else{
                             /**如果是属性为  [String]   className== String 会报错*/
-                            
-                            
-                            
                             let kModel = ( NSClassFromString(className) as! KeyValueModel.Type).init()
                             for one in (diction[dicProperName] as? [[String:AnyObject]]!)! {
                                 arr.append(kModel.modelWithDic(one))
@@ -100,9 +94,15 @@ extension KeyValueModel{
                     }else{
                         model.setValue(value, forKeyPath:msg.name)
                     }
-                    
                 }else{
                     /**普通属性*/
+                    if(!msg.isFoundation){
+                        var className = msg.valueType
+                        className = className.getWholeClassName()
+                        if value is [String:AnyObject]{
+                            value =  (NSClassFromString(className)?.modelWithDictionary(value as! [String : AnyObject]))!
+                        }
+                    }
                     model.setValue(value, forKeyPath:msg.name)
                 }
                 

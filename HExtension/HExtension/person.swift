@@ -12,6 +12,7 @@ class person: KeyValueModel {
     var name:String?
     var address:String?
     var photos:[photo]?
+    var one:photo?
 }
 class photo:KeyValueModel{
     var name:String?

@@ -31,7 +31,8 @@ class twoViewcontroller: UITableViewController {
                                         ,
                                         [  //person
                                             "name":"ZM",
-                                            "address":"四川"
+                                            "address":"四川",
+                                            "one":["name":"ZZH","width":100]
                                         ]
                                     ]
 
@@ -62,6 +63,11 @@ class twoViewcontroller: UITableViewController {
         if let _ = model.photos{
             str += "photo Name : " + (model.photos?.last?.name!)!
         }
+        
+        if let _ = model.one{
+            str += "  onePhotoName:" + model.one!.name!
+        }
+        
         cell!.textLabel?.text = str
         return cell!
     }

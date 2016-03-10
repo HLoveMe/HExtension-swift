@@ -18,6 +18,7 @@ class messageInfo {
     var isModelArray:Bool       //是否是模型数组
     var arrarModelName:String!  //数组里面类的名字
     var isBasicNumber:Bool = false      ///**暂时还没解决Int? Double? 等等基本数字类型可选型的问题*/
+    var isFoundation:Bool = true   //如果是类 是否为系统类
     lazy var basicNumber:[String] = {["Int","Double","Float"]}()
     init(name:String,value:Any){
         self.name = name
@@ -31,6 +32,14 @@ class messageInfo {
             if FoundationClassName.contains(self.arrarModelName.lowercaseString){
                 self.isModelArray = false
             }
+        }else{
+            let one = NSClassFromString("\(self.valueType)".getWholeClassName())
+            if let _ = one{
+                if one!.isSubclassOfClass(KeyValueModel.self){
+                    self.isFoundation = false
+                }
+            }
+            
         }
         self.isBasicNumber = isBasicNumber(valueType)
         if !self.isBasicNumber {self.isOptional = a.isOptional()}
@@ -65,5 +74,10 @@ extension String{
         var name = self.substringFromIndex(self.startIndex.advancedBy(15))
         name = name.substringToIndex(name.endIndex.advancedBy(-2))
         return name
+    }
+    func getWholeClassName()->String{
+        var ClassName = "\(NSBundle.mainBundle().infoDictionary!["CFBundleName"]!)"
+         ClassName.appendContentsOf("." + self)
+        return ClassName
     }
 }
