@@ -4,6 +4,11 @@
 //
 //  Created by space on 15/12/29.
 //  Copyright © 2015年 Space. All rights reserved.
+/**  swift 版的赋值
+    注意：已经实现了序列化  不要实现任何构造器
+    1：对于Int Double  Float 不要使用可选值   如果使用为了使程序不崩溃   就不会赋值操作
+     2：  func propertyNameInDictionary()->[String:String]?   返回 属性名和字典名不同的对应关系
+*/
 //
 
 import Foundation
@@ -37,12 +42,21 @@ class KeyValueModel: NSObject ,NSCoding,modelPruotocol{
 }
 extension KeyValueModel{
     func properties(option:(messageInfo)->()){
-        for one in  mirror.children{
-            let propertyName:String = one.label!
-            let value = one.value
-            let msg = messageInfo.init(name: propertyName, value: value)
-            option(msg)
+        func enumerate(mir:Mirror){
+            if  "\(mir.subjectType)" == "KeyValueModel"{return}
+            let superMir = mir.superclassMirror()
+            if let _ = superMir{
+                enumerate(superMir!)
+            }
+            for one in  mir.children{
+                let propertyName:String = one.label!
+                let value = one.value
+                let msg = messageInfo.init(name: propertyName, value: value)
+                option(msg)
+            }
         }
+        enumerate(mirror)
+        
     }
     /**返回一个新的对象*/
    private func modelWithDic(dic:[String:AnyObject])->KeyValueModel{
@@ -222,13 +236,7 @@ extension KeyValueModel {
         
     }
 }
-
 extension KeyValueModel{
     func propertyNameInDictionary() -> [String : String]? { return ["":""] }
 }
-/**  swift 版的赋值
-注意：已经实现了序列化  不要实现任何构造器
-1：对于Int Double  Float 不要使用可选值   如果使用为了使程序不崩溃   就不会赋值操作
-2：  func propertyNameInDictionary()->[String:String]?   返回 属性名和字典名不同的对应关系
-3：func classInArray()->[String:String]?  
-*/
+
