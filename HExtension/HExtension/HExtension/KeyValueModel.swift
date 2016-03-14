@@ -75,7 +75,7 @@ extension KeyValueModel{
                     /**模型数组*/
                     if let className = msg.arrarModelName{
                         var arr = [AnyObject]()
-                        let clazz = NSClassFromString(className.getWholeClassName())
+                        let clazz = objc_getClass(className.getWholeClassName())
                         if let _ = clazz {
                             let oneModel = (clazz as! KeyValueModel.Type).init()
                             for one in (diction[dicProperName] as? [[String:AnyObject]]!)! {
