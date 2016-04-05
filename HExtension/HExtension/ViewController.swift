@@ -7,6 +7,11 @@
 //
 
 import UIKit
+class HHHHH:KeyValueModel{
+    var name:String?
+    var urls:[String]?
+}
+
 
 class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate {
     var photos:[photo]?
@@ -17,12 +22,13 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
         tableView.delegate = self
         return tableView
     }()
-    lazy var titles:[String] = ["基本使用","嵌套（返回的json 数据包含其他Model）","序列化","自带请求网络数据"]
+    lazy var titles:[String] = ["基本使用","嵌套（返回的json 数据包含其他Model）","序列化","自带请求网络数据","模型转为字典"]
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "HExtension"
         view.addSubview(tableView)
-               
+        print("\(person())")
+
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
@@ -56,6 +62,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
              self.navigationController?.pushViewController(fourViewController(), animated: true)
             return
         default:
+            self.navigationController?.pushViewController(fiveViewController(), animated: true)
             return
         }
         

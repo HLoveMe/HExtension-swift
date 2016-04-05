@@ -1,27 +1,26 @@
 //
 //  KeyValueModel.swift
-//  2_1IOS项目
 //
 //  Created by space on 15/12/29.
 //  Copyright © 2015年 Space. All rights reserved.
+
+
+
 /**  swift 版的赋值
-    注意：已经实现了序列化  不要实现任何构造器
-    1：对于Int Double  Float 不要使用可选值   如果使用为了使程序不崩溃   就不会赋值操作
-     2：  func propertyNameInDictionary()->[String:String]?   返回 属性名和字典名不同的对应关系
-*/
+ 注意：已经实现了序列化  不要实现任何构造器    继承KeyValueModel即可
+ 1：对于Int Double  Float 不要使用可选值   如果使用为了使程序不崩溃   就不会赋值操作
+ 2：  func propertyNameInDictionary()->[String:String]?   返回 属性名和字典名不同的对应关系
+ */
 //
 
 import Foundation
 protocol modelPruotocol:NSObjectProtocol{
-    /**之前的:之后的*/
+    /**之前的Key:之后的key  模型属性名和的字典key不匹配问题*/
     func propertyNameInDictionary()->[String:String]?
-//    func classInArray()->[String:String]?
 }
 class KeyValueModel: NSObject ,NSCoding,modelPruotocol{
     /**得到反射*/
-    
     lazy var mirror:Mirror =  Mirror(reflecting:self)
-    
     required override init() {super.init()}
     func encodeWithCoder(aCoder: NSCoder) {
         for child  in mirror.children {
@@ -41,34 +40,14 @@ class KeyValueModel: NSObject ,NSCoding,modelPruotocol{
     }
 }
 extension KeyValueModel{
-    func properties(option:(messageInfo)->()){
-        func enumerate(mir:Mirror){
-            if  "\(mir.subjectType)" == "KeyValueModel"{return}
-            let superMir = mir.superclassMirror()
-            if let _ = superMir{
-                enumerate(superMir!)
-            }
-            for one in  mir.children{
-                let propertyName:String = one.label!
-                let value = one.value
-                let msg = messageInfo.init(name: propertyName, value: value)
-                option(msg)
-            }
-        }
-        enumerate(mirror)
-        
-    }
     /**返回一个新的对象*/
-   private func modelWithDic(dic:[String:AnyObject])->KeyValueModel{
+    private func modelWithDic(dic:[String:AnyObject])->KeyValueModel{
         return (self.dynamicType as  KeyValueModel.Type).modelWithDictionary(dic)
     }
     /**对象数组*/
-   private func modelWithArray(array:[[String:AnyObject]])->[KeyValueModel]{
+    private func modelsWithArray(array:[[String:AnyObject]])->[KeyValueModel]{
         return (self.dynamicType as  KeyValueModel.Type).modelsWithArray(array)
     }
-}
-
-extension KeyValueModel{
     /**字典数组得到 ------》模型*/
     class func modelsWithArray(modelArray:[[String:AnyObject]]) ->[KeyValueModel]{
         var models = [KeyValueModel]()
@@ -78,35 +57,43 @@ extension KeyValueModel{
         }
         return models
     }
-     /**字典------》模型*/
-    class func modelWithDictionary( var  diction:[String:AnyObject]) ->Self{
+    /**字典------》模型*/
+    class func modelWithDictionary ( diction:[String:AnyObject]) ->Self{
         let model = self.init()
         /**得到[propertyName:key]*/
         let exchageDic = model.propertyNameInDictionary()
         func setValue(msg:messageInfo,dicProperName:String){
             if var value = diction[dicProperName] {
-                if msg.isModelArray {
-                    /**模型数组*/
-                    if let className = msg.arrarModelName{
-                        var arr = [AnyObject]()
-                        let clazz = objc_getClass(className.getWholeClassName())
-                        if let _ = clazz {
-                            let oneModel = (clazz as! KeyValueModel.Type).init()
-                            for one in (diction[dicProperName] as? [[String:AnyObject]]!)! {
-                                arr.append(oneModel.modelWithDic(one))
-                            }
-                            model.setValue(arr , forKeyPath:msg.name)
-                        }else{
-                            /**如果是属性为  [String]   className== String 会报错*/
-                            let kModel = ( NSClassFromString(className) as! KeyValueModel.Type).init()
-                            for one in (diction[dicProperName] as? [[String:AnyObject]]!)! {
-                                arr.append(kModel.modelWithDic(one))
-                            }
-                            model.setValue(arr , forKeyPath:msg.name)
+                if msg.isArray {
+                    var arr = [AnyObject]()
+                    let  className =  msg.arrarModelName
+                    if msg.isModelArray {/**模型数组*/
+                        let oneModel = (objc_getClass(className.getWholeClassName()) as! KeyValueModel.Type).init()
+                        for one in (diction[dicProperName] as? [[String:AnyObject]]!)! {
+                            arr.append(oneModel.modelWithDic(one))
                         }
                         model.setValue(arr , forKeyPath:msg.name)
-                    }else{
-                        model.setValue(value, forKeyPath:msg.name)
+                    }else{  //不是模型数组
+                        let clazz = objc_getClass(className)
+                        if let _ = clazz {//[NSURl]  [NSNumber] 等等
+                            if(className.lowercaseString == "nsurl"){
+                                for one in (value as![String]) {
+                                    let url = NSURL.init(string: one)
+                                    if let _ = url {
+                                        arr.append(url!)
+                                    }
+                                }
+                            }else if(className.lowercaseString == "nsnumber"){
+                                for one in (value as![String]) {
+                                    let number = NSNumber.init(double:(one as NSString).doubleValue)
+                                    arr.append(number)
+                                }
+                            }else{}
+                            model.setValue(arr , forKeyPath:msg.name)
+                        }else{
+                            // [String]   NSClassFromString("String")不能创建
+                            model.setValue(value , forKeyPath:msg.name)
+                        }
                     }
                 }else{
                     /**普通属性*/
@@ -139,104 +126,63 @@ extension KeyValueModel{
         }
         return model
     }
-}
-extension KeyValueModel {
-     /**
-        GET直接网络请求
-     - parameter urlString:  网址
-     - parameter option:     网络返回必须是字典数据  给用户  option   返回 （字典或者数组）
-     - parameter complement: 得到模型数据（主线程）
+    /**
+     模型转为字典
+     - returns: 字典
      */
-    class func GETModelsWithUrl(urlString:String,option:([String:AnyObject])->AnyObject,complement:([KeyValueModel]?)->()){
-        let url = NSURL.init(string: urlString)
-        if let _ = url {
-            NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, _, _) -> Void in
-                var dic:Dictionary<String,AnyObject>? = nil
-                do{
-                  dic = (try NSJSONSerialization.JSONObjectWithData(data!, options: [.AllowFragments,.MutableContainers])) as? Dictionary<String,AnyObject>
-                }catch{print("\(error)");complement(nil)}
-                let values = option(dic!)
-                if "\(Mirror(reflecting: values).subjectType)".containsString("Array"){
-                    var arr:[KeyValueModel] = [KeyValueModel]()
-                    let valueArr = values as! [[String:AnyObject]]
-                    for one in valueArr {
-                        let model = self.modelWithDictionary(one)
-                        arr.append(model)
+    func dictionary()->[String:AnyObject]{
+        var dic:[String:AnyObject] = [String:AnyObject]()
+        properties { (message) in
+            let value = self.valueForKey(message.name)
+            if let _ = value{
+                if(message.isArray){
+                    var  array:[AnyObject]=[AnyObject]()
+                    if(message.isModelArray){
+                        for one in value as! [KeyValueModel] {
+                            array.append(one.dictionary())
+                        }
+                    }else{
+                        let one = (value as! [AnyObject]).exchange() as! [AnyObject]
+                        array.appendContentsOf(one)
                     }
-                    dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        complement(arr)
-                    })
-                    
-                }else if("\(Mirror(reflecting: values).subjectType)".containsString("Dictionary")){
-                    let model = self.modelWithDictionary(values as! [String : AnyObject])
-                    dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                       complement([model])
-                    })
+                    dic[message.name] = array
                 }else{
-                    dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        complement([])
-                    })
+                    if(message.isFoundation){      //系统
+                        //字典  NSURl  NSNUmber String
+                        if(message.valueType=="NSURL"){
+                            dic[message.name] = (value as! NSURL).absoluteString
+                        }else if(message.valueType.lowercaseString.containsString("dictionary")){
+                            dic[message.name] = (value as! [String:AnyObject]).exchange()
+                        }else{
+                            dic[message.name] = "\(value)"
+                        }
+                    }else{//继承KeyValueModel
+                        let obj = value as! KeyValueModel
+                        let temp = obj.dictionary()
+                        dic[message.name] = temp
+                    }
                 }
-            }).resume()
-        }
-    }
-     /**
-         POST直接网络请求
-     - parameter urlString:  网址
-     - parameter option:     网络返回必须是字典数据  给用户  option   返回 （字典或者数组）
-     - parameter complement: 得到模型数据(在主线程)
-     */
-    class func POSTModelsWithUrl(urlString:String,argumentDic:[String:String],option:([String:AnyObject])->AnyObject,complement:(([KeyValueModel]?)->())){
-        var body:String = ""
-        argumentDic.enumerateKeysAndObjects { (key, Value, index) -> () in
-            if(index == argumentDic.count - 1 ){
-                body  +=  (key + "=" + Value)
-            }else{
-                body += (key + "=" + Value + "&")
             }
         }
-        
-        body = body.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.controlCharacterSet())!
-
-        
-        let url = NSURL(string: urlString)
-        let request = NSMutableURLRequest.init(URL: url!)
-        request.HTTPMethod = "POST"
-        request.timeoutInterval = 20
-        request.HTTPBody = body.dataUsingEncoding(NSUTF8StringEncoding)
-        
-        NSURLSession.sharedSession().dataTaskWithRequest(request) { (data, _, _) -> Void in
-            var dic:Dictionary<String,AnyObject>? = nil
-            do{
-                dic = (try NSJSONSerialization.JSONObjectWithData(data!, options: [.AllowFragments,.MutableContainers])) as? Dictionary<String,AnyObject>
-            }catch{print("\(error)");complement(nil)}
-            let values = option(dic!)
-            if "\(Mirror(reflecting: values).subjectType)".containsString("Array"){
-                var arr:[KeyValueModel] = [KeyValueModel]()
-                let valueArr = values as! [[String:AnyObject]]
-                for one in valueArr {
-                    let model = self.modelWithDictionary(one)
-                    arr.append(model)
-                }
-                dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                    complement(arr)
-                })
-                
-            }else if("\(Mirror(reflecting: values).subjectType)".containsString("Dictionary")){
-                let model = self.modelWithDictionary(values as! [String : AnyObject])
-                dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                    complement([model])
-                })
-            }else{
-                dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                    complement([])
-                })
-            }
-        }.resume()
-        
+        return dic;
     }
 }
 extension KeyValueModel{
-    func propertyNameInDictionary() -> [String : String]? { return ["":""] }
+    func properties(option:(messageInfo)->()){
+        func enumerate(mir:Mirror){
+            if  "\(mir.subjectType)" == "KeyValueModel"{return}
+            let superMir = mir.superclassMirror()
+            if let _ = superMir{
+                enumerate(superMir!)
+            }
+            for one in  mir.children{
+                let propertyName:String = one.label!
+                let value = one.value
+                let msg = messageInfo.init(name: propertyName, value: value)
+                option(msg)
+            }
+        }
+        enumerate(mirror)
+    }
+    
 }
-

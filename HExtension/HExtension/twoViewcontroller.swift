@@ -15,6 +15,7 @@ class twoViewcontroller: UITableViewController {
         let arr:[[String:AnyObject]] = [[ //person
                                         "name":"ZZH",
                                         "address":"湖北",
+                                         "aaa":["1231","1313"],
                                         "photos":[ //photo
                                             ["name":"photo1",
                                                 "width":23,

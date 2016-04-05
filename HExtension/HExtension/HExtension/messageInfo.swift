@@ -1,6 +1,5 @@
 //
 //  messageInfo.swift
-//  2_1IOS项目
 //
 //  Created by space on 15/12/30.
 //  Copyright © 2015年 Space. All rights reserved.
@@ -15,22 +14,23 @@ class messageInfo {
     var value:Any              //nil        (nil)
     var valueType:String       //String
     var isOptional:Bool = false
-    var isModelArray:Bool       //是否是模型数组
+    var isArray:Bool = false;
+    var isModelArray:Bool = false      //是否是模型数组
     var arrarModelName:String!  //数组里面类的名字
     var isBasicNumber:Bool = false      ///**暂时还没解决Int? Double? 等等基本数字类型可选型的问题*/
     var isFoundation:Bool = true   //如果是类 是否为系统类
-    lazy var basicNumber:[String] = {["Int","Double","Float"]}()
+    private lazy var basicNumber:[String] = {["Int","Double","Float","CGFloat","long"]}()
     init(name:String,value:Any){
         self.name = name
         self.value = value
         let a = Mirror(reflecting: value)
         self.valueType = "\(a.subjectType)".getTypeName()
-        self.isModelArray = self.valueType.containsString("Array")
-        if self.isModelArray {
-            self.arrarModelName = "\(a.subjectType)".getClassName()
-            let FoundationClassName = ["string","nsurl","int","double","float"]
-            if FoundationClassName.contains(self.arrarModelName.lowercaseString){
-                self.isModelArray = false
+        self.isArray = self.valueType.containsString("Array")
+        if self.isArray {
+             self.arrarModelName = "\(a.subjectType)".getClassName()
+            let flag = NSClassFromString(self.arrarModelName.getWholeClassName())?.isSubclassOfClass(KeyValueModel.self)
+            if let _ = flag {
+                self.isModelArray = true
             }
         }else{
             let one = NSClassFromString("\(self.valueType)".getWholeClassName())
@@ -59,25 +59,5 @@ extension Mirror{
         default:
             return false
         }
-    }
-}
-extension String{
-    func getTypeName()->String{
-        let a = self as  NSString
-        let range = a.rangeOfString("Optional<")
-        if range.length == 0 {return self}
-        let b = a.substringFromIndex(range.location + range.length) as NSString
-        return b.substringToIndex(b.length-1)
-    }
-    func getClassName() ->String{
-         ////Optional<Array<photo>>  ---->photo
-        var name = self.substringFromIndex(self.startIndex.advancedBy(15))
-        name = name.substringToIndex(name.endIndex.advancedBy(-2))
-        return name
-    }
-    func getWholeClassName()->String{
-        var ClassName = "\(NSBundle.mainBundle().infoDictionary!["CFBundleName"]!)"
-         ClassName.appendContentsOf("." + self)
-        return ClassName
     }
 }

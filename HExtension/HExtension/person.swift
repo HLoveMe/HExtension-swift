@@ -11,6 +11,7 @@ import UIKit
 class person: KeyValueModel {
     var name:String?
     var address:String?
+    var aaa:[NSNumber]?
     var photos:[photo]?
     var one:photo?
 }
@@ -19,3 +20,15 @@ class photo:KeyValueModel{
     var width:CGFloat = 0
     var height:CGFloat = 0
 }
+/**
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ */

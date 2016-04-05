@@ -12,7 +12,7 @@ class oneViewController: UITableViewController {
     var dataArray:[newsModel] = [newsModel]()
     override func viewDidLoad() {
         super.viewDidLoad()
-        let url = NSURL(string: "http://app.api.autohome.com.cn/autov5.0.0/news/newslist-pm1-c0-nt0-p1-s30-l0.json")
+        let url = NSURL(string: "http://app.api.autohome.com.cn/autov5.0.0/news/newslist-pm1-c0-nt0-p1-s30-l1.json")
           NSURLSession.sharedSession().dataTaskWithURL(url!) { (data, _, _) -> Void in
             var dic:[String:AnyObject]? = nil
             do{
@@ -24,7 +24,7 @@ class oneViewController: UITableViewController {
             let  dicArray = result["newslist"] as! NSArray
             
             
-            /**解析*/
+/**解析*/
             self.dataArray = newsModel.modelsWithArray(dicArray as! [[String : AnyObject]]) as! [newsModel]
             dispatch_sync(dispatch_get_main_queue(), { () -> Void in
                   self.tableView.reloadData()
@@ -32,7 +32,6 @@ class oneViewController: UITableViewController {
           
         }.resume()
     }
-
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
@@ -49,5 +48,9 @@ class oneViewController: UITableViewController {
         
         return cell!
     }
-
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let one = self.dataArray[indexPath.row]
+        let dic = one.dictionary()
+        print(dic);
+    }
 }
