@@ -17,26 +17,26 @@ class fourViewController: UITableViewController {
         
         /**使用自带网络请求*/
         
-        focusimg.GETModelsWithUrl(urlStr, option: { (diction) -> AnyObject in
+        focusimg.GETModelsWithUrl(urlString: urlStr, option: { (diction) -> AnyObject in
             let result=diction["result"] as! NSDictionary
-            return result["focusimg"]!
+            return result["focusimg"]! as AnyObject
             }) { (models) -> () in
             self.dataArr = models as! [focusimg]
             self.tableView.reloadData()
         }
     }
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return  self.dataArr.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let ID:String = "ID"
-        var cell:UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(ID)
+        var cell:UITableViewCell? = tableView.dequeueReusableCell(withIdentifier: ID)
         if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: ID)
+            cell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: ID)
             
         }
-        let model =  self.dataArr[indexPath.row] as focusimg
+        let model =  self.dataArr[(indexPath as NSIndexPath).row] as focusimg
         cell!.textLabel!.text = "\(model.title!)"
         return cell!
     }

@@ -12,11 +12,11 @@ class oneViewController: UITableViewController {
     var dataArray:[newsModel] = [newsModel]()
     override func viewDidLoad() {
         super.viewDidLoad()
-        let url = NSURL(string: "http://app.api.autohome.com.cn/autov5.0.0/news/newslist-pm1-c0-nt0-p1-s30-l1.json")
-          NSURLSession.sharedSession().dataTaskWithURL(url!) { (data, _, _) -> Void in
+        let url = URL(string: "http://app.api.autohome.com.cn/autov5.0.0/news/newslist-pm1-c0-nt0-p1-s30-l1.json")
+          URLSession.shared.dataTask(with: url!, completionHandler: { (data, _, _) -> Void in
             var dic:[String:AnyObject]? = nil
             do{
-               dic = try NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments) as? [String : AnyObject]
+               dic = try JSONSerialization.jsonObject(with: data!, options: .allowFragments) as? [String : AnyObject]
             }catch{
                 print("\(error)")
             }
@@ -25,31 +25,31 @@ class oneViewController: UITableViewController {
             
             
 /**解析*/
-            self.dataArray = newsModel.modelsWithArray(dicArray as! [[String : AnyObject]]) as! [newsModel]
-            dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+            self.dataArray = newsModel.modelsWithArray(modelArray: dicArray as! [[String : AnyObject]]) as! [newsModel]
+            DispatchQueue.main.sync(execute: { () -> Void in
                   self.tableView.reloadData()
             })
           
-        }.resume()
+        }) .resume()
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return dataArray.count
     }
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let ID:String = "ID"
-        var cell:UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(ID)
+        var cell:UITableViewCell? = tableView.dequeueReusableCell(withIdentifier: ID)
         if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: ID)
+            cell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: ID)
             
         }
-        cell!.textLabel?.text = dataArray[indexPath.row].title
+        cell!.textLabel?.text = dataArray[(indexPath as NSIndexPath).row].title
         
         return cell!
     }
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let one = self.dataArray[indexPath.row]
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let one = self.dataArray[(indexPath as NSIndexPath).row]
         let dic = one.dictionary()
         print(dic);
     }

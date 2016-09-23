@@ -11,19 +11,19 @@ import UIKit
 class thereViewController: UIViewController {
 
     @IBOutlet var lab: UILabel!
-    var data:NSData?
+    var data:Data?
     override func viewDidLoad() {
         super.viewDidLoad()
     }
 
-    @IBAction func arch(sender: UIButton) {
-        let dic = ["name":"ZZH","width":375,"height":667]
-        let img = photo.modelWithDictionary(dic)
-        data = NSKeyedArchiver.archivedDataWithRootObject(img)
+    @IBAction func arch(_ sender: UIButton) {
+        let dic = ["name":"ZZH","width":375,"height":667] as [String : Any]
+        let img = photo.modelWithDictionary(diction: dic as [String : AnyObject])
+        data = NSKeyedArchiver.archivedData(withRootObject: img)
     }
     
-    @IBAction func unArch(sender: UIButton) {
-        let img = NSKeyedUnarchiver.unarchiveObjectWithData(data!) as? photo
+    @IBAction func unArch(_ sender: UIButton) {
+        let img = NSKeyedUnarchiver.unarchiveObject(with: data!) as? photo
         let str = "\(img!.name)" + "\(img!.width)" + "\(img!.height)"
         lab.text = str
     }

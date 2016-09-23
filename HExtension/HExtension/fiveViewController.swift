@@ -21,7 +21,7 @@ class fiveViewController: UIViewController {
         let per = person()
         per.name  = "ZZH"
         per.address = "湖北仙桃"
-        per.aaa = [NSNumber.init(long: 11),NSNumber.init(short: 11)]
+        per.aaa = [NSNumber.init(value: 11 as Int),NSNumber.init(value: 11 as Int16)]
         
         let one = photo()
         one.name = "photo1"

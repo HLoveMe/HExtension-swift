@@ -12,7 +12,7 @@ extension Dictionary {
     /**得到所有键 数组*/
     func  allKeys() ->[Key]{
         var array = [Key]()
-        var  gener = self.keys.generate()
+        var  gener = self.keys.makeIterator()
         while let key = gener.next() {
             array.append(key)
         }
@@ -39,20 +39,21 @@ extension Array{
 extension String{
     func getTypeName()->String{
         let a = self as  NSString
-        let range = a.rangeOfString("Optional<")
+        let range = a.range(of: "Optional<")
         if range.length == 0 {return self}
-        let b = a.substringFromIndex(range.location + range.length) as NSString
-        return b.substringToIndex(b.length-1)
+        let b = a.substring(from: range.location + range.length) as NSString
+        return b.substring(to: b.length-1)
     }
     func getClassName() ->String{
         ////Optional<Array<photo>>  ---->photo
-        var name = self.substringFromIndex(self.startIndex.advancedBy(15))
-        name = name.substringToIndex(name.endIndex.advancedBy(-2))
+        
+        var name = self.substring(from: self.index(self.startIndex, offsetBy: 15))
+        name = name.substring(to: name.index(name.endIndex, offsetBy: -2))
         return name
     }
     func getWholeClassName()->String{
-        var ClassName = "\(NSBundle.mainBundle().infoDictionary!["CFBundleName"]!)"
-        ClassName.appendContentsOf("." + self)
+        var ClassName = "\(Bundle.main.infoDictionary!["CFBundleName"]!)"
+        ClassName.append("." + self)
         return ClassName
     }
 }

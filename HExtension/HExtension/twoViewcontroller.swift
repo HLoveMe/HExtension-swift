@@ -12,8 +12,8 @@ class twoViewcontroller: UITableViewController {
     var dataArray:[person] = [person]()
     override func viewDidLoad() {
         super.viewDidLoad()
-        let arr:[[String:AnyObject]] = [[ //person
-                                        "name":"ZZH",
+        let arr:[[String:Any]] = [[ //person
+                                        "name":"ZZH" ,
                                         "address":"湖北",
                                          "aaa":["1231","1313"],
                                         "photos":[ //photo
@@ -38,7 +38,7 @@ class twoViewcontroller: UITableViewController {
                                     ]
 
         
-       dataArray = person.modelsWithArray(arr) as! [person]
+       dataArray = person.modelsWithArray(modelArray: arr as [[String : AnyObject]]) as! [person]
         self.tableView.reloadData()
     }
     
@@ -47,19 +47,19 @@ class twoViewcontroller: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return dataArray.count
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let ID:String = "ID"
-        var cell:UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(ID)
+        var cell:UITableViewCell? = tableView.dequeueReusableCell(withIdentifier: ID)
         if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: ID)
+            cell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: ID)
             
         }
-        let model = dataArray[indexPath.row]
+        let model = dataArray[(indexPath as NSIndexPath).row]
         var str = model.name! + model.address!
         if let _ = model.photos{
             str += "photo Name : " + (model.photos?.last?.name!)!

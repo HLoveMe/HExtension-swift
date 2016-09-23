@@ -27,9 +27,9 @@ class newsModel: KeyValueModel {
             if self.urls != nil {
                 
             }else{
-                let range =  indexdetail!.rangeOfString("http://")
-                let str = indexdetail!.substringFromIndex((range?.startIndex)!)
-                self.urls = str.componentsSeparatedByString(",")
+                let range =  indexdetail!.range(of: "http://")
+                let str = indexdetail!.substring(from: (range?.lowerBound)!)
+                self.urls = str.components(separatedBy: ",")
             }
             return urls
         }

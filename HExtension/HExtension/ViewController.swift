@@ -17,7 +17,7 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
     var photos:[photo]?
     
     lazy var tableView:UITableView = {
-        var tableView = UITableView.init(frame:self.view.bounds, style:.Plain)
+        var tableView = UITableView.init(frame:self.view.bounds, style:.plain)
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
@@ -31,22 +31,22 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
 
     }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         return titles.count
     }
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell{
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
         let ID:String = "ID"
-        var cell:UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(ID)
+        var cell:UITableViewCell? = tableView.dequeueReusableCell(withIdentifier: ID)
         if cell == nil {
-            cell = UITableViewCell(style: UITableViewCellStyle.Value1, reuseIdentifier: ID)
+            cell = UITableViewCell(style: UITableViewCellStyle.value1, reuseIdentifier: ID)
             
         }
-        cell?.textLabel?.text = titles[indexPath.row]
+        cell?.textLabel?.text = titles[(indexPath as NSIndexPath).row]
         return cell!
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let index = indexPath.row
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let index = (indexPath as NSIndexPath).row
         switch index {
         case 0:
             self.navigationController?.pushViewController(oneViewController(), animated: true)

@@ -25,28 +25,28 @@ class messageInfo {
         self.value = value
         let a = Mirror(reflecting: value)
         self.valueType = "\(a.subjectType)".getTypeName()
-        self.isArray = self.valueType.containsString("Array")
+        self.isArray = self.valueType.contains("Array")
         if self.isArray {
              self.arrarModelName = "\(a.subjectType)".getClassName()
-            let flag = NSClassFromString(self.arrarModelName.getWholeClassName())?.isSubclassOfClass(KeyValueModel.self)
+            
+            let flag = NSClassFromString(self.arrarModelName.getWholeClassName())?.isSubclass(of: KeyValueModel.self)
             if let _ = flag {
                 self.isModelArray = true
             }
         }else{
-            let one = NSClassFromString("\(self.valueType)".getWholeClassName())
-            if let _ = one{
-                if one!.isSubclassOfClass(KeyValueModel.self){
+            let flag = NSClassFromString("\(self.valueType)".getWholeClassName())?.isSubclass(of: KeyValueModel.self)
+            if let _ = flag {
+                if (flag!){
                     self.isFoundation = false
                 }
             }
-            
         }
-        self.isBasicNumber = isBasicNumber(valueType)
+        self.isBasicNumber = isBasicNumberFunc(proName: self.valueType)
         if !self.isBasicNumber {self.isOptional = a.isOptional()}
     }
-    func isBasicNumber(proName:String)->Bool{
+    func isBasicNumberFunc(proName:String)->Bool{
         return basicNumber.contains { (one) -> Bool in
-            return one.containsString(proName)
+            return one.contains(proName)
         }
     }
     
@@ -54,7 +54,7 @@ class messageInfo {
 extension Mirror{
     func isOptional()->Bool{
         switch self.displayStyle! {
-        case Mirror.DisplayStyle.Optional:
+        case Mirror.DisplayStyle.optional:
             return true
         default:
             return false
