@@ -52,7 +52,8 @@ extension String{
         return name
     }
     func getWholeClassName()->String{
-        var ClassName = "\(Bundle.main.infoDictionary!["CFBundleName"]!)"
+        
+        var ClassName = "\(classPrefix)"
         ClassName.append("." + self)
         return ClassName
     }

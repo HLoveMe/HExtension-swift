@@ -189,3 +189,5 @@ extension KeyValueModel{
     }
     
 }
+
+var classPrefix = NSStringFromClass(KeyValueModel.self).components(separatedBy: ".").first!

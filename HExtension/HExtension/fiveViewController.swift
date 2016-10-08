@@ -33,6 +33,6 @@ class fiveViewController: UIViewController {
         
         let nums = dic["aaa"] as! [NSNumber]
         print("\(nums[0])")
-        print(dic)
+        
     }
 }
