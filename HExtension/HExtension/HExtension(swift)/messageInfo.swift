@@ -53,10 +53,14 @@ class messageInfo {
 }
 extension Mirror{
     func isOptional()->Bool{
-        switch self.displayStyle! {
-        case Mirror.DisplayStyle.optional:
-            return true
-        default:
+        if let _ = self.displayStyle{
+            switch self.displayStyle! {
+            case Mirror.DisplayStyle.optional:
+                return true
+            default:
+                return false
+            }
+        }else{
             return false
         }
     }
